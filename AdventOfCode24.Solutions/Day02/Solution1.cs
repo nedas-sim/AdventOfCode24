@@ -1,6 +1,6 @@
 ﻿namespace AdventOfCode24.Solutions.Day02;
 
-public class Solution2
+public class Solution1
 {
     public static void SolveExercise1()
     {

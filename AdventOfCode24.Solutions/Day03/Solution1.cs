@@ -1,6 +1,6 @@
 ﻿namespace AdventOfCode24.Solutions.Day03;
 
-public class Solution3
+public class Solution1
 {
     const string MUL = "mul(";
     const string DO = "do()";
