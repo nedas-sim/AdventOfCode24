@@ -1,3 +1,3 @@
 ﻿Console.WriteLine("Hello, World!");
 
-AdventOfCode24.Solutions.Day02.Solution2.SolveExercise2();
+AdventOfCode24.Solutions.Day03.Solution3.SolveExercise2();
