@@ -22,6 +22,26 @@ public class Solution1
         Console.WriteLine(totalXmasCount);
     }
 
+    public static void SolveExercise2()
+    {
+        List<List<char>> wordMatrix = File.ReadAllLines("../../../../AdventOfCode24.Solutions/Day04/task.txt")
+            .Select(line => line.Select(ch => ch).ToList())
+            .ToList();
+
+        List<(int, int)> aLocations = wordMatrix
+            .Index()
+            .Select(tuple => tuple.Item.Index().Where(ch => ch.Item == 'A').Select(ch => (ch.Index, tuple.Index)))
+            .SelectMany(x => x)
+            .ToList()
+            ;
+
+        int totalMasCount = aLocations
+            .Select(xLocation => GetMasCountForA(wordMatrix, xLocation))
+            .Sum();
+
+        Console.WriteLine(totalMasCount);
+    }
+
     private static int GetXmasCountForX(List<List<char>> wordMatrix, (int, int) originalXLocation)
     {
         List<(int, int)> directions = [
@@ -53,6 +73,32 @@ public class Solution1
         return total;
     }
 
+    private static int GetMasCountForA(List<List<char>> wordMatrix, (int, int) originalALocation)
+    {
+        List<(int, int)> directions = [
+            (-1, -1),
+            (1, -1),
+        ];
+
+        foreach ((int, int) direction in directions)
+        {
+            (int, int) oppositeDirection = (-direction.Item1, -direction.Item2);
+
+            bool oneWay = IsCharInThatDirection('M', originalALocation, direction, wordMatrix) &&
+                          IsCharInThatDirection('S', originalALocation, oppositeDirection, wordMatrix);
+
+            bool otherWay = IsCharInThatDirection('S', originalALocation, direction, wordMatrix) &&
+                            IsCharInThatDirection('M', originalALocation, oppositeDirection, wordMatrix);
+
+            if (!oneWay && !otherWay)
+            {
+                return 0;
+            }
+        }
+
+        return 1;
+    }
+
     private static bool GoInDirectionAndCheck(char toCheck, ref (int, int) xLocation, (int, int) direction, List<List<char>> wordMatrix)
     {
         int width = wordMatrix[0].Count;
@@ -71,5 +117,20 @@ public class Solution1
         }
 
         return true;
+    }
+
+    private static bool IsCharInThatDirection(char toCheck, (int, int) location, (int, int) direction, List<List<char>> wordMatrix)
+    {
+        int width = wordMatrix[0].Count;
+        int height = wordMatrix.Count;
+
+        location = (location.Item1 + direction.Item1, location.Item2 + direction.Item2);
+
+        if (location.Item1 < 0 || location.Item1 >= width || location.Item2 < 0 || location.Item2 >= height)
+        {
+            return false;
+        }
+
+        return wordMatrix[location.Item2][location.Item1] == toCheck;
     }
 }
