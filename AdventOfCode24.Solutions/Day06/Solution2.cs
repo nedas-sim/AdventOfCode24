@@ -2,26 +2,9 @@
 
 namespace AdventOfCode24.Solutions.Day06;
 
-public class Solution1
+public class Solution2
 {
-    public static void SolveExercise1()
-    {
-        string[] lines = File.ReadAllLines("../../../../AdventOfCode24.Solutions/Day06/task.txt");
-
-        Map map = new(lines);
-
-        while (map.MoveGuard())
-        {
-        }
-
-        int result = map.CountTiles('X');
-
-        // add 1 to this, because the guard is out of map
-        // not gonna solve this edge case
-
-        Console.WriteLine(result);
-    }
-
+    // Almost 10 times faster
     public static void SolveExercise2()
     {
         string[] lines = File.ReadAllLines("../../../../AdventOfCode24.Solutions/Day06/task.txt");
@@ -31,19 +14,19 @@ public class Solution1
 
         int totalCount = 0;
 
-        Stopwatch sw = Stopwatch.StartNew();
-        for (int obstacleIndex = 0; obstacleIndex < width * height; obstacleIndex++)
-        {
-            if (obstacleIndex % 500 == 0)
-            {
-                Console.WriteLine($"Iteration: {obstacleIndex + 1}");
-            }
+        Console.WriteLine($"Will do {width * height} iterations");
 
+        Stopwatch sw = Stopwatch.StartNew();
+        Parallel.For(0, width * height, new ParallelOptions
+        {
+            MaxDegreeOfParallelism = Environment.ProcessorCount,
+        }, (obstacleIndex) =>
+        {
             Map map = new(lines);
 
             if (map.IsTileAt(obstacleIndex % width, obstacleIndex / width, '#', '^', 'v', '<', '>'))
             {
-                continue;
+                return;
             }
 
             map.SetTile(obstacleIndex % width, obstacleIndex / width, '#');
@@ -54,15 +37,14 @@ public class Solution1
                 count++;
                 if (count > 100000) // shit solution, I'll take it
                 {
-                    totalCount++;
-                    break;
+                    Interlocked.Increment(ref totalCount);
+                    return;
                 }
             }
-        }
+        });
         sw.Stop();
 
         Console.WriteLine($"Ran for {sw.ElapsedMilliseconds}ms");
-
         Console.WriteLine(totalCount);
     }
 }
