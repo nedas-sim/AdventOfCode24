@@ -20,6 +20,53 @@ public class Solution1
         Console.WriteLine(result); 
     }
 
+    public static void SolveExercise2()
+    {
+        string[] lines = File.ReadAllLines("../../../../AdventOfCode24.Solutions/Day06/task.txt");
+
+        int width = lines[0].Length;
+        int height = lines.Length;
+
+        int totalCount = 0;
+
+        Console.WriteLine($"Will do {width * height} iterations");
+        for (int obstacleIndex = 0; obstacleIndex < width * height; obstacleIndex++)
+        {
+            if (obstacleIndex % 500 == 0)
+            {
+                Console.WriteLine($"Iteration: {obstacleIndex + 1}");
+            }
+
+            Map map = new(lines);
+
+            if (map.IsTileAt(obstacleIndex % width, obstacleIndex / width, '#', '^', 'v', '<', '>'))
+            {
+                continue;
+            }
+
+            map.SetTile(obstacleIndex % width, obstacleIndex / width, '#');
+
+            try
+            {
+                int count = 0;
+                while (map.MoveGuard())
+                {
+                    count++;
+                    if (count > 100000) // shit solution, I'll take it
+                    {
+                        throw new OverflowException();
+                    }
+                }
+            }
+            catch (OverflowException)
+            {
+                totalCount++;
+            }
+        }
+
+        Console.WriteLine(totalCount);
+    }
+
     private record struct Tile(int X, int Y, char Value);
 
     private class Map
@@ -101,5 +148,9 @@ public class Solution1
         }
 
         public int CountTiles(char value) => _tiles.SelectMany(x => x).Count(tile => tile.Value == value);
+
+        public bool IsTileAt(int x, int y, params HashSet<char> values) => values.Contains(_tiles[y][x].Value);
+
+        public void SetTile(int x, int y, char value) => _tiles[y][x] = _tiles[y][x] with { Value = value };
     }
 }
