@@ -38,19 +38,19 @@ public class Solution1
             .Select(line => line.Split(": "))
             .Select(parts => new
             {
-                Result = ulong.Parse(parts[0]),
-                Numbers = parts[1].Split(" ").Select(ulong.Parse).ToList(),
+                Result = long.Parse(parts[0]),
+                Numbers = parts[1].Split(" ").Select(long.Parse).ToList(),
             })
             .Select(parsed => new Equation2(parsed.Result, parsed.Numbers))
             .ToList();
 
-        ulong result = 0;
+        long result = 0;
 
-        IEnumerable<ulong> toAdd = equations
+        IEnumerable<long> toAdd = equations
             .Where(equation => equation.OperationsExist(0, equation.Result))
             .Select(equation => equation.Result);
 
-        foreach (ulong val in toAdd)
+        foreach (long val in toAdd)
         {
             result += val;
         }
@@ -87,12 +87,12 @@ public class Solution1
         }
     }
 
-    private class Equation2(ulong result, List<ulong> numbers)
+    private class Equation2(long result, List<long> numbers)
     {
-        public ulong Result { get; } = result;
-        private List<ulong> Numbers { get; set; } = numbers.Reverse<ulong>().ToList();
+        public long Result { get; } = result;
+        private List<long> Numbers { get; set; } = numbers.Reverse<long>().ToList();
 
-        public bool OperationsExist(int index, ulong leftFromPreviousIteration)
+        public bool OperationsExist(int index, long leftFromPreviousIteration)
         {
             if (index == Numbers.Count - 1)
             {
@@ -104,7 +104,7 @@ public class Solution1
                 return false;
             }
 
-            ulong subtracted = leftFromPreviousIteration - Numbers[index];
+            long subtracted = leftFromPreviousIteration - Numbers[index];
             bool canBeDivided = leftFromPreviousIteration % Numbers[index] == 0;
             bool canBeConcatenated = leftFromPreviousIteration.ToString().EndsWith(Numbers[index].ToString());
 
@@ -114,7 +114,7 @@ public class Solution1
 
             //try
             //{
-                
+
             //}
             //catch
             //{
@@ -122,15 +122,15 @@ public class Solution1
             //}
         }
 
-        private static ulong GetBeforeConcatenation(ulong leftFromPreviousIteration, ulong number)
+        private static long GetBeforeConcatenation(long leftFromPreviousIteration, long number)
         {
             string trimmed = (leftFromPreviousIteration - number).ToString().TrimEnd('0');
             if (trimmed == "")
             {
-                return 0;
+                return -1;
             }
 
-            return ulong.Parse(trimmed);
+            return long.Parse(trimmed);
         }
     }
 }
